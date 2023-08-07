@@ -2,13 +2,13 @@ import random
 
 def get_user_choice():
     # TODO: Ask the user for their choice (rock, paper, or scissors) and return it
-    choice=input("enter your choice")
+    choice=input("enter your choice: ")
     choice=choice.lower()
     if choice=="rock" or choice=="paper" or choice=="scissors":
-        return choice.lower()
+        return choice
     else:
         print("Please enter valid your choice")
-        return
+        pass
    
 
 def get_computer_choice():
