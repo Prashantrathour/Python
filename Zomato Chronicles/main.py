@@ -130,7 +130,7 @@ def main():
         print("7. Update order status")
         print("8. Exit")
         print("--------------------------------------------------------")
-        choice = int(input("Enter your choice (1-4): "))
+        choice = int(input("Enter your choice (1-8): "))
         if choice == 1:
             add_dish_to_menu(menu)
         elif choice == 2:
