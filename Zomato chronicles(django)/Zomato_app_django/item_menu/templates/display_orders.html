@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Display Orders</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">Orders List</h1>
+        <div class="d-flex justify-content-end">
+            <a class="nav-link text-primary mx-3" href="{% url 'add_dish' %}">Add Dish</a>
+            <a class="nav-link text-success mx-3" href="{% url 'display_orders' %}">Display Order</a>
+            <a class="nav-link text-info mx-3" href="{% url 'dish_list' %}">Home</a>
+        </div>
+        <table class="table table-bordered mt-4">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Dish Name</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.cutomer_name }}</td>
+                    <td>
+                        {% for order_quantity in order.orderquantity_set.all %}
+                            {% if order_quantity.order == order %}
+                                {{ order_quantity.dish_name }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for order_quantity in order.orderquantity_set.all %}
+                            {% if order_quantity.order == order %}
+                                {{ order_quantity.quantity }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>${{ order.total_price }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>
+                        <a href="{% url 'update_order' order.id %}" class="btn btn-primary">Update</a>
+                        <a href="{% url 'cancel_order' order.id %}" class="btn btn-danger">Cancel</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

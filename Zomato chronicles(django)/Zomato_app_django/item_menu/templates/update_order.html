@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Order</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 30px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Update Order #{{ order.pk }}</h1>
+        <div class="d-flex justify-content-end">
+            <a class="nav-link text-primary mx-3" href="{% url 'add_dish' %}">Add Dish</a>
+            <a class="nav-link text-success mx-3" href="{% url 'display_orders' %}">Display Order</a>
+            <a class="nav-link text-info mx-3" href="{% url 'dish_list' %}">Home</a>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select class="form-control" name="status">
+                    <option value="received" {% if order.status == 'received' %}selected{% endif %}>Received</option>
+                    <option value="preparing" {% if order.status == 'preparing' %}selected{% endif %}>Preparing</option>
+                    <option value="ready" {% if order.status == 'ready' %}selected{% endif %}>Ready for Pickup</option>
+                    <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+</body>
+</html>
