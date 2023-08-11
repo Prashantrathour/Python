@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-1#qxxk@ruhb+jg_yyi==q@6do+$v^hajuw65#o3%f)cd9*3ox$
 DEBUG = True
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['127.0.0.1','.vercel.app']
+ALLOWED_HOSTS = ['.vercel.app']
 
 # Application definition
 
@@ -70,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Zomato_app_django.wsgi.application'
+WSGI_APPLICATION = 'Zomato_app_django.wsgi.app'
 
 
 # Database
