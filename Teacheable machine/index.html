@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teachable Machine Image Model</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .main {
+      display: flex;
+      gap: 10px;
+    }
+
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 10px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+
+    #webcam-container {
+      order: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      width: 200px;
+      height: 200px;
+    }
+
+    video {
+      max-width: 100%;
+      height: auto;
+    }
+
+    #instructions {
+      order: 2;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      width: 500px;
+    }
+
+    #instructions h2 {
+      margin-bottom: 10px;
+    }
+
+    .instruction {
+      margin-bottom: 10px;
+    }
+
+    #label-container {
+      order: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+     min-width: none;
+     margin: 10px;
+    }
+
+    .label-progress-container {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 10px;
+      background-color: #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .loader-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000; /* Make sure loader is on top */
+    }
+
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="main">
+    <div id="container">
+      <h1>Teachable Machine Image Model</h1>
+      <div id="loader-container" class="loader-container">
+        <div class="loader"></div>
+      </div>
+      <button type="button" onclick="init()">Start</button>
+      <div style="display: flex; width: 100%;">
+        <div id="label-container"><h3>All classes</h3></div>
+      <div id="webcam-container"></div>
+    </div>
+      <div id="instructions">
+        <h2>Instructions:</h2>
+        <div class="instruction">
+          <strong>Class 1:</strong> Background should be clean and well-lit.
+          Capture a mobile device from various angles as if you were making a
+          call.
+        </div>
+        <div class="instruction">
+          <strong>Class 2:</strong> Identify if a human is present in the
+          camera view.
+        </div>
+        <div class="instruction">
+          <strong>Class 3:</strong> Identify and classify various types of
+          books that appear in the camera view.
+        </div>
+    </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+  <script type="text/javascript">
+    const URL = "https://teachablemachine.withgoogle.com/models/HK3DvNBPI/";
+    let model, webcam, labelContainers, maxPredictions;
+
+    async function init() {
+      try {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+        document.querySelector("#loader-container").style.display = "flex";
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        const flip = true;
+        webcam = new tmImage.Webcam(200, 200, flip);
+        await webcam.setup();
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        document
+          .getElementById("webcam-container")
+          .appendChild(webcam.canvas);
+        labelContainers = [];
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) {
+          const container = document.createElement("div");
+          container.classList.add("label-progress-container");
+
+          const progressBarContainer = document.createElement("div");
+          progressBarContainer.classList.add("progress-bar-container");
+
+          const progressBar = document.createElement("div");
+          progressBar.classList.add("progress-bar");
+          progressBarContainer.appendChild(progressBar);
+
+          container.appendChild(progressBarContainer);
+
+          const label = document.createElement("div");
+          container.appendChild(label);
+
+          labelContainer.appendChild(container);
+          labelContainers.push(container);
+        }
+        document.querySelector("#loader-container").style.display = "none";
+        document.querySelector("button").style.display = "none";
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    async function loop() {
+      webcam.update();
+      await predict();
+      window.requestAnimationFrame(loop);
+    }
+
+    async function predict() {
+      const classPredictions = await model.predict(webcam.canvas);
+
+      for (let i = 0; i < maxPredictions; i++) {
+        const classPrediction = classPredictions[i];
+        const className = classPrediction.className;
+        const probability = classPrediction.probability.toFixed(2);
+
+        const progressBar = labelContainers[i].querySelector(".progress-bar");
+        progressBar.style.width = `${probability * 100}%`;
+
+        if (className === "Human present in camera") {
+          progressBar.style.backgroundColor = "green";
+        } else if (className === "Books present") {
+          progressBar.style.backgroundColor = "orange";
+        } else {
+          if (probability >= 0.8) {
+            progressBar.style.backgroundColor = "green";
+          } else if (probability >= 0.3 && probability <= 0.8) {
+            progressBar.style.backgroundColor = "yellow";
+          } else {
+            progressBar.style.backgroundColor = "red";
+          }
+        }
+
+        labelContainers[i].childNodes[1].textContent = `${className}: ${probability}`;
+      }
+    }
+  </script>
+</body>
+</html>
