@@ -78,8 +78,12 @@ WSGI_APPLICATION = 'Zomato_app_django.wsgi.app'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "dishes",
+        "USER": "prashant",
+        "PASSWORD": "Prashant123@",
+        "HOST": "127.0.0.1",
+        "PORT": "3306",
     }
 }
 
